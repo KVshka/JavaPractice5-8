@@ -35,6 +35,5 @@ public class Restaurant {
 
 
     public void setRate(BigDecimal guestRate) { this.GuestRate = guestRate; }
-
-
-    }
+    public void setId(Long id) { this.id = id; }
+}

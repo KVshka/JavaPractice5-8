@@ -22,4 +22,6 @@ public class Guest {
     public int getAge() { return this.Age; }
     public String getGender() { return this.Gender; }
 
+    public void setId(Long id) { this.id = id; }
+
 }
