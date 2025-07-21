@@ -20,7 +20,7 @@ public class RestaurantService {
     }
 
     public void remove(Restaurant restaurant) {
-        restaurantRepository.remove(restaurant);
+        restaurantRepository.remove(restaurant.getId());
     }
 
     public List<Restaurant> findAll() {

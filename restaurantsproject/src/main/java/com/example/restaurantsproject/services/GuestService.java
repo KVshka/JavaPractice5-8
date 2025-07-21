@@ -19,7 +19,7 @@ public class GuestService {
     }
 
     public void remove(Guest guest) {
-        guestRepository.remove(guest);
+        guestRepository.remove(guest.getId());
     }
 
     public List<Guest> findAll() {
