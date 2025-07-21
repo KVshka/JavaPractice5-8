@@ -1,38 +1,55 @@
 package com.example.restaurantsproject.services;
 
+import com.example.restaurantsproject.dto.ReviewRequestDTO;
+import com.example.restaurantsproject.dto.ReviewResponseDTO;
 import com.example.restaurantsproject.entities.Review;
 import com.example.restaurantsproject.repositories.ReviewRepository;
+import com.example.restaurantsproject.mappers.ReviewMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ReviewService {
     private final ReviewRepository reviewRepository;
+
     private final RestaurantService restaurantService;
 
-    public ReviewService(ReviewRepository reviewRepository, RestaurantService restaurantService) {
+    private final ReviewMapper reviewMapper;
+
+    public ReviewService(ReviewRepository reviewRepository, RestaurantService restaurantService, ReviewMapper reviewMapper) {
         this.reviewRepository = reviewRepository;
         this.restaurantService = restaurantService;
+        this.reviewMapper = reviewMapper;
     }
 
-    public void save(Review review) {
+    public void save(ReviewRequestDTO dto){
+        Review review = reviewMapper.convertToEntity(dto);
         reviewRepository.save(review);
-        recalculateRestaurantRating(review.getRestaurantId());
     }
 
-    public void remove(Review review) {
-        reviewRepository.remove(review.getGuestId(), review.getRestaurantId());
-        recalculateRestaurantRating(review.getRestaurantId());
+    public void remove(Long guestId, Long restaurantId) {
+        reviewRepository.remove(guestId, restaurantId);
+        recalculateRestaurantRating(restaurantId);
     }
 
-    public List<Review> findAll() {
-        return reviewRepository.findAll();
+    public void update(Long guestId, Long restaurantID, ReviewRequestDTO dto){
+        Review review = reviewMapper.convertToEntity(dto);
+        reviewRepository.update(guestId, restaurantID, review);
     }
 
-    public Review findById(Long guestId, Long restaurantId) {
-        return reviewRepository.findById(guestId, restaurantId);
+    public List<ReviewResponseDTO> findAll() {
+        List<ReviewResponseDTO> dtoList = new ArrayList<>();
+        for (Review r : reviewRepository.findAll()) {
+            dtoList.add(reviewMapper.convertToDto(r));
+        }
+        return dtoList;
+    }
+
+    public ReviewResponseDTO findById(Long guestId, Long restaurantId) {
+        Review review = reviewRepository.findById(guestId, restaurantId);
+        return reviewMapper.convertToDto(review);
     }
 
     //Пересчёт средней оценки
@@ -43,4 +60,5 @@ public class ReviewService {
             restaurantService.updateRating(restaurantId, avg);
         }
     }
+
 }
